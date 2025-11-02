@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مستندات ربات تریدر MetaTrader 5 - سیستم بهینه‌سازی خروج</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        nav {
+            background: #34495e;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        nav a:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-right: 5px solid #667eea;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-right: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-right: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .diagram {
+            background: white;
+            padding: 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        ul, ol {
+            margin-right: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .file-structure {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            direction: ltr;
+            text-align: left;
+            margin: 15px 0;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .flow-step {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-right: 5px solid #667eea;
+            position: relative;
+        }
+        
+        .flow-step::before {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            color: #667eea;
+        }
+        
+        .flow-step:last-child::before {
+            display: none;
+        }
+        
+        @media print {
+            nav {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 ربات تریدر MetaTrader 5</h1>
+            <p>سیستم هوشمند معاملات با بهینه‌سازی خروج بر اساس R-Multiple</p>
+        </header>
+        
+        <nav>
+            <ul>
+                <li><a href="#overview">معرفی</a></li>
+                <li><a href="#architecture">معماری</a></li>
+                <li><a href="#entry">ورود به معامله</a></li>
+                <li><a href="#exit">خروج بهینه</a></li>
+                <li><a href="#optimizer">بهینه‌ساز</a></li>
+                <li><a href="#files">فایل‌ها</a></li>
+            </ul>
+        </nav>
+        
+        <div class="content">
+            <!-- بخش معرفی -->
+            <section id="overview">
+                <h2>📖 معرفی سیستم</h2>
+                
+                <p>
+                    این ربات تریدر یک سیستم معاملاتی خودکار برای پلتفرم MetaTrader 5 است که بر اساس تحلیل تکنیکال 
+                    (Fibonacci Retracement و Swing Points) تصمیم‌گیری می‌کند. ویژگی منحصر به فرد این ربات، 
+                    سیستم پیشرفته بهینه‌سازی خروج از پوزیشن‌ها بر اساس R-Multiple است که با استفاده از داده‌های 
+                    تیک واقعی بهترین استراتژی خروج را پیدا می‌کند.
+                </p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🎯 تحلیل تکنیکال</h4>
+                        <p>تشخیص خودکار Swing Points و محاسبه سطوح Fibonacci Retracement</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>⚡ ورود هوشمند</h4>
+                        <p>سیگنال‌های ورود بر اساس Touch دوم روی سطح 0.705 فیبوناچی</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>📊 مدیریت ریسک</h4>
+                        <p>سیستم چندمرحله‌ای مدیریت پوزیشن با جابه‌جایی خودکار SL/TP</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h4>🔬 بهینه‌سازی خروج</h4>
+                        <p>جستجوی جامع بهترین استراتژی خروج با Trailing Stop و Break-Even</p>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 نکته مهم:</strong> این سیستم به دو بخش اصلی تقسیم می‌شود:
+                    <ol>
+                        <li><strong>بخش ورود:</strong> شناسایی سیگنال‌های خرید/فروش بر اساس فیبوناچی</li>
+                        <li><strong>بخش خروج:</strong> بهینه‌سازی زمان و روش بستن پوزیشن برای حداکثر سود</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <!-- بخش معماری -->
+            <section id="architecture">
+                <h2>🏗️ معماری سیستم</h2>
+                
+                <h3>نمودار جریان داده</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <h4>1. دریافت داده از MT5</h4>
+                        <p>ربات از طریق <code>MT5Connector</code> داده‌های قیمت را دریافت می‌کند</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>2. تحلیل تکنیکال</h4>
+                        <p><code>get_legs()</code> و <code>get_swing_points()</code> نقاط Swing را شناسایی می‌کنند</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>3. محاسبه فیبوناچی</h4>
+                        <p><code>fibonacci_retracement()</code> سطوح بازگشتی را محاسبه می‌کند</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>4. تشخیص سیگنال</h4>
+                        <p>Touch دوم روی 0.705 → سیگنال خرید/فروش تولید می‌شود</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>5. باز کردن پوزیشن</h4>
+                        <p><code>open_buy_position()</code> یا <code>open_sell_position()</code> اجرا می‌شود</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>6. مدیریت پوزیشن</h4>
+                        <p><code>manage_open_positions()</code> + <code>LiveExitController</code> پوزیشن را مدیریت می‌کنند</p>
+                    </div>
+                </div>
+                
+                <h3>ساختار فایل‌ها</h3>
+                <div class="file-structure">
+new_simple_bot_for_test/
+├── main_metatrader_new.py      # فایل اصلی ربات
+├── mt5_connector.py            # اتصال به MetaTrader 5
+├── metatrader5_config.py       # تنظیمات ربات
+├── fibo_calculate.py           # محاسبه سطوح فیبوناچی
+├── get_legs.py                 # شناسایی Legs
+├── swing.py                    # شناسایی Swing Points
+├── save_file.py                # سیستم لاگ‌گیری
+├── email_notifier.py           # ارسال ایمیل
+│
+├── exit_optimizer_core.py      # موتور شبیه‌سازی خروج ⭐
+├── live_exit_controller.py     # کنترلر خروج زنده ⭐
+├── grid_exit_optimization.py   # جستجوی جامع ⭐
+└── optimize_exit_ticks.py      # تست یک تنظیم ⭐
+                </div>
+            </section>
+            
+            <!-- بخش ورود -->
+            <section id="entry">
+                <h2>🚀 سیستم ورود به معامله</h2>
+                
+                <h3>الگوریتم تشخیص سیگنال</h3>
+                <p>
+                    ربات از یک استراتژی چندمرحله‌ای برای تشخیص نقطه ورود استفاده می‌کند:
+                </p>
+                
+                <ol>
+                    <li>
+                        <strong>شناسایی Swing Points:</strong>
+                        سیستم با استفاده از تابع <code>get_legs()</code> الگوهای قیمتی 
+                        (Legs) را در داده‌های تاریخی شناسایی می‌کند.
+                    </li>
+                    
+                    <li>
+                        <strong>محاسبه سطوح فیبوناچی:</strong>
+                        پس از شناسایی یک Swing کامل (حداقل 3 Leg)، سطوح فیبوناچی 
+                        از قیمت شروع تا پایان Swing محاسبه می‌شود.
+                    </li>
+                    
+                    <li>
+                        <strong>انتظار برای Touch:</strong>
+                        ربات منتظر می‌ماند تا قیمت سطح 0.705 فیبوناچی را لمس کند.
+                        در این مرحله، اولین Touch ثبت می‌شود.
+                    </li>
+                    
+                    <li>
+                        <strong>Touch دوم:</strong>
+                        اگر قیمت دوباره سطح 0.705 را لمس کند اما با تغییر جهت کندل 
+                        (مثلاً از Bearish به Bullish)، این Touch دوم محسوب می‌شود.
+                    </li>
+                    
+                    <li>
+                        <strong>سیگنال نهایی:</strong>
+                        Touch دوم = سیگنال خرید (برای Swing Bullish) یا فروش (برای Swing Bearish)
+                    </li>
+                </ol>
+                
+                <div class="code-block">
+# مثال کد ورود برای Swing Bullish
+if last_swing_type == 'bullish' and state.second_touch:
+    buy_entry_price = last_tick.ask
+    sl = state.fib_levels['1.0']  # Stop Loss در پایین‌ترین نقطه
+    tp = entry + (stop_distance * win_ratio)  # Take Profit
+    
+    result = mt5_conn.open_buy_position(
+        tick=last_tick,
+        sl=sl,
+        tp=tp,
+        comment="Bullish Swing"
+    )
+                </div>
+                
+                <div class="info-box">
+                    <strong>🎯 نکته:</strong> 
+                    ربات فقط در ساعات معاملاتی تعریف شده (طبق <code>MT5_CONFIG['trading_hours']</code>) 
+                    معامله می‌کند و از باز کردن چند پوزیشن همزمان جلوگیری می‌کند.
+                </div>
+            </section>
+            
+            <!-- بخش خروج -->
+            <section id="exit">
+                <h2>🎯 سیستم مدیریت خروج</h2>
+                
+                <p>
+                    سیستم مدیریت خروج شامل دو لایه است:
+                </p>
+                
+                <h3>1. سیستم مرحله‌ای پایه (DYNAMIC_RISK_CONFIG)</h3>
+                <p>
+                    این سیستم در <code>main_metatrader_new.py</code> در تابع <code>manage_open_positions()</code> 
+                    پیاده‌سازی شده است. با رسیدن سود به سطوح مختلف R (مثلاً 2R، 3R، 4R...)، 
+                    Stop Loss و Take Profit به‌صورت خودکار جابه‌جا می‌شوند.
+                </p>
+                
+                <div class="code-block">
+# مثال: در 2R، SL به 2R منتقل می‌شود و TP به 3R تنظیم می‌شود
+if profit_R >= 2.0:
+    new_sl = entry + 2.0 * risk  # برای Buy
+    new_tp = entry + 3.0 * risk
+    mt5_conn.modify_sl_tp(ticket, new_sl=new_sl, new_tp=new_tp)
+                </div>
+                
+                <h3>2. سیستم بهینه‌سازی پیشرفته (LiveExitController)</h3>
+                <p>
+                    این سیستم که جدیداً اضافه شده است، از نتایج بهینه‌سازی استفاده می‌کند تا 
+                    استراتژی‌های پیشرفته‌تری مانند Trailing Stop و Break-Even را اجرا کند.
+                </p>
+                
+                <table>
+                    <tr>
+                        <th>ویژگی</th>
+                        <th>توضیح</th>
+                        <th>مثال</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Trailing Stop</strong></td>
+                        <td>تعقیب خودکار Stop Loss پس از رسیدن به یک R مشخص</td>
+                        <td>شروع در 1.5R با فاصله 0.7R</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Break-Even</strong></td>
+                        <td>انتقال SL به نقطه سر به سر پس از رسیدن به R مشخص</td>
+                        <td>در 0.5R → SL به Entry+0.1R</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scale-Out</strong></td>
+                        <td>بستن بخشی از پوزیشن در R مشخص (آینده)</td>
+                        <td>بستن 50% در 1R</td>
+                    </tr>
+                </table>
+                
+                <div class="warning-box">
+                    <strong>⚠️ توجه:</strong> 
+                    سیستم بهینه‌سازی فقط زمانی فعال می‌شود که فایل <code>best_config.txt</code> 
+                    در ریشه پروژه وجود داشته باشد (نتیجه اجرای <code>grid_exit_optimization.py</code>).
+                </div>
+            </section>
+            
+            <!-- ادامه در بخش بعدی -->
+            <section id="optimizer">
+                <h2>🔬 سیستم بهینه‌سازی خروج (Exit Optimizer)</h2>
+                
+                <p>
+                    سیستم بهینه‌سازی خروج شامل 4 فایل اصلی است که به‌صورت یکپارچه کار می‌کنند 
+                    تا بهترین استراتژی خروج از پوزیشن‌ها را پیدا کنند.
+                </p>
+                
+                <h3>چرا بهینه‌سازی خروج مهم است؟</h3>
+                <p>
+                    بیشتر تریدرها وقت زیادی برای بهبود نقطه ورود صرف می‌کنند، اما نقطه خروج 
+                    تأثیر بیشتری بر سودآوری کلی دارد. یک استراتژی خروج خوب می‌تواند:
+                </p>
+                <ul>
+                    <li>✅ سودهای کوچک را به سودهای بزرگ تبدیل کند</li>
+                    <li>✅ از سودهای بزرگ محافظت کند (Trailing Stop)</li>
+                    <li>✅ ضررها را به حداقل برساند (Break-Even)</li>
+                    <li>✅ Win Rate و Profit Factor را بهبود بخشد</li>
+                </ul>
+                
+                <h3>روش کار سیستم بهینه‌سازی</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <h4>مرحله 1: خواندن داده‌های تاریخی</h4>
+                        <p>خواندن <code>ReportHistory.csv</code> و فایل‌های تیک قیمت</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>مرحله 2: شبیه‌سازی معاملات</h4>
+                        <p>برای هر معامله تاریخی، خروج با استراتژی‌های مختلف شبیه‌سازی می‌شود</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>مرحله 3: محاسبه معیارها</h4>
+                        <p>Average R، Profit Factor، Win Rate، Max Drawdown محاسبه می‌شود</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>مرحله 4: انتخاب بهترین</h4>
+                        <p>بهترین تنظیمات بر اساس Average R انتخاب می‌شود</p>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <h4>مرحله 5: اعمال به ربات</h4>
+                        <p>تنظیمات بهینه در <code>best_config.txt</code> ذخیره می‌شود</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- بخش فایل‌ها -->
+            <section id="files">
+                <h2>📁 توضیحات فایل‌های بهینه‌ساز</h2>
+                
+                <!-- exit_optimizer_core.py -->
+                <section style="background: #fff; border-right: 5px solid #3498db;">
+                    <h3>🔧 exit_optimizer_core.py</h3>
+                    <p><strong>نقش:</strong> موتور اصلی شبیه‌سازی و محاسبات</p>
+                    
+                    <h4>کلاس‌ها و توابع اصلی:</h4>
+                    
+                    <h4>1. کلاس ExitParams</h4>
+                    <p>ذخیره پارامترهای استراتژی خروج:</p>
+                    <div class="code-block">
+@dataclass
+class ExitParams:
+    scaleout_r: Optional[float] = None      # R برای Scale-Out
+    scaleout_frac: float = 0.0              # درصد بستن (0-1)
+    be_trigger_r: Optional[float] = None    # R برای فعال شدن Break-Even
+    be_back_r: float = 0.0                  # فاصله BE از Entry (R)
+    tp_r: Optional[float] = None            # Take Profit ثابت (R)
+    trailing_start_r: Optional[float] = None # شروع Trailing در R
+    trailing_gap_r: float = 0.7             # فاصله Trailing از قیمت (R)
+                    </div>
+                    
+                    <h4>2. تابع simulate_trade()</h4>
+                    <p>
+                        این تابع قلب سیستم بهینه‌سازی است. برای هر معامله تاریخی، 
+                        خروج را با توجه به پارامترهای داده شده شبیه‌سازی می‌کند.
+                    </p>
+                    <p><strong>ورودی:</strong></p>
+                    <ul>
+                        <li><code>report_row</code>: اطلاعات معامله از ReportHistory</li>
+                        <li><code>ticks</code>: داده‌های تیک قیمت در بازه زمانی معامله</li>
+                        <li><code>params</code>: پارامترهای استراتژی خروج</li>
+                    </ul>
+                    <p><strong>خروجی:</strong></p>
+                    <ul>
+                        <li><code>r_total</code>: R نهایی معامله</li>
+                        <li><code>exit_reason</code>: دلیل خروج (sl, tp_direct, trail, ...)</li>
+                        <li><code>n_events</code>: تعداد رویدادهای رخ داده</li>
+                    </ul>
+                    
+                    <h4>3. تابع compute_metrics()</h4>
+                    <p>محاسبه معیارهای عملکرد:</p>
+                    <ul>
+                        <li><strong>average_R:</strong> میانگین R معاملات</li>
+                        <li><strong>profit_factor:</strong> نسبت سودها به ضررها</li>
+                        <li><strong>win_rate:</strong> درصد معاملات سودده</li>
+                        <li><strong>max_drawdown_R:</strong> بیشترین افت تجمعی</li>
+                    </ul>
+                    
+                    <h4>4. تابع monte_carlo_maxdd()</h4>
+                    <p>
+                        تحلیل Monte Carlo برای تخمین توزیع احتمالی Max Drawdown. 
+                        این تابع 1500 بار معاملات را به‌صورت تصادفی جابه‌جا می‌کند 
+                        و توزیع Drawdown را محاسبه می‌کند.
+                    </p>
+                </section>
+                
+                <!-- grid_exit_optimization.py -->
+                <section style="background: #fff; border-right: 5px solid #e74c3c; margin-top: 30px;">
+                    <h3>🔍 grid_exit_optimization.py</h3>
+                    <p><strong>نقش:</strong> جستجوی جامع (Grid Search) برای پیدا کردن بهترین تنظیمات</p>
+                    
+                    <h4>روش کار:</h4>
+                    <ol>
+                        <li>
+                            <strong>تعریف فضای جستجو:</strong>
+                            تمام ترکیبات ممکن از پارامترها تعریف می‌شود:
+                            <div class="code-block">
+grid_space = {
+    "scaleout_r": [None, 1.0],
+    "scaleout_frac": [0.0, 0.5, 0.6],
+    "be_trigger_r": [None, 0.2, 0.5, 0.7],
+    "be_back_r": [0.0, 0.1],
+    "tp_r": [1.2, 1.5, 2.0, None],
+    "trailing_start_r": [1.5, 2.0, None],
+    "trailing_gap_r": [0.4, 0.5, 0.7],
+}
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <strong>شبیه‌سازی تمام ترکیبات:</strong>
+                            برای هر ترکیب، تمام معاملات تاریخی شبیه‌سازی می‌شود.
+                        </li>
+                        
+                        <li>
+                            <strong>محاسبه معیارها:</strong>
+                            برای هر ترکیب، معیارهای عملکرد محاسبه می‌شود.
+                        </li>
+                        
+                        <li>
+                            <strong>ذخیره نتایج:</strong>
+                            <ul>
+                                <li><code>exit_grid_results.csv</code>: تمام نتایج</li>
+                                <li><code>exit_grid_top20.csv</code>: 20 ترکیب برتر</li>
+                                <li><code>best_config.txt</code>: بهترین تنظیمات + معیارها</li>
+                                <li><code>equity_curve_best.png</code>: نمودار سود تجمعی</li>
+                                <li><code>r_distribution_best.png</code>: توزیع R</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <div class="info-box">
+                        <strong>⏱️ زمان اجرا:</strong> 
+                        بسته به تعداد معاملات و تیک‌ها، ممکن است چند دقیقه تا چند ساعت طول بکشد.
+                    </div>
+                </section>
+                
+                <!-- live_exit_controller.py -->
+                <section style="background: #fff; border-right: 5px solid #27ae60; margin-top: 30px;">
+                    <h3>⚡ live_exit_controller.py</h3>
+                    <p><strong>نقش:</strong> اتصال نتایج بهینه‌سازی به ربات زنده</p>
+                    
+                    <h4>کلاس LiveExitController</h4>
+                    <p>این کلاس پل بین سیستم بهینه‌سازی و ربات زنده است.</p>
+                    
+                    <h4>متدهای اصلی:</h4>
+                    
+                    <h4>1. __init__()</h4>
+                    <p>
+                        در هنگام راه‌اندازی، فایل <code>best_config.txt</code> را خوانده و 
+                        پارامترهای بهینه را بارگذاری می‌کند.
+                    </p>
+                    
+                    <h4>2. compute_updates()</h4>
+                    <p>
+                        این متد برای هر پوزیشن باز، محاسبه می‌کند که آیا باید SL/TP تغییر کند یا نه.
+                    </p>
+                    <p><strong>ورودی:</strong></p>
+                    <ul>
+                        <li>اطلاعات پوزیشن (entry, risk, direction)</li>
+                        <li>قیمت فعلی بازار</li>
+                        <li>SL/TP فعلی</li>
+                        <li>State (وضعیت Trailing و ...)</li>
+                    </ul>
+                    <p><strong>خروجی:</strong></p>
+                    <ul>
+                        <li>SL جدید (اگر بهتر از فعلی باشد)</li>
+                        <li>TP جدید</li>
+                        <li>State به‌روز شده</li>
+                    </ul>
+                    
+                    <div class="success-box">
+                        <strong>✅ مزیت:</strong> 
+                        این سیستم به‌صورت Real-Time و در هر تیک قیمت، بررسی می‌کند که آیا 
+                        شرایط برای اعمال Trailing Stop یا Break-Even فراهم است یا نه.
+                    </div>
+                </section>
+                
+                <!-- optimize_exit_ticks.py -->
+                <section style="background: #fff; border-right: 5px solid #f39c12; margin-top: 30px;">
+                    <h3>🧪 optimize_exit_ticks.py</h3>
+                    <p><strong>نقش:</strong> تست سریع یک تنظیم خاص بدون اجرای Grid Search کامل</p>
+                    
+                    <h4>کاربردها:</h4>
+                    <ul>
+                        <li>✅ تست یک تنظیم خاص قبل از اجرای Grid Search</li>
+                        <li>✅ مقایسه چند تنظیم دستی</li>
+                        <li>✅ بررسی سریع نتایج</li>
+                    </ul>
+                    
+                    <h4>نحوه استفاده:</h4>
+                    <div class="code-block">
+# تست با تنظیمات پیش‌فرض
+python optimize_exit_ticks.py
+
+# تست با تنظیمات دستی
+python optimize_exit_ticks.py --params '{"trailing_start_r": 1.5, "trailing_gap_r": 0.7}'
+                    </div>
+                </section>
+            </section>
+            
+            <!-- بخش روابط -->
+            <section>
+                <h2>🔗 روابط بین بخش‌ها</h2>
+                
+                <h3>نمودار تعامل فایل‌ها</h3>
+                <div class="diagram">
+                    <pre style="text-align: right; direction: rtl; font-family: Tahoma;">
+┌─────────────────────────────────────────────────────────────┐
+│                   main_metatrader_new.py                    │
+│  (ربات اصلی - ورود و مدیریت پوزیشن‌ها)                      │
+└───────────────┬─────────────────────────────────────────────┘
+                │
+                ├──→ manage_open_positions()
+                │       │
+                │       ├──→ DYNAMIC_RISK_CONFIG (مراحل پایه)
+                │       │
+                │       └──→ LiveExitController ⭐
+                │               │
+                │               └──→ best_config.txt
+                │
+                └──→ open_buy_position() / open_sell_position()
+                        │
+                        └──→ mt5_connector.py
+
+┌─────────────────────────────────────────────────────────────┐
+│              سیستم بهینه‌سازی (Offline)                      │
+└───────────────┬─────────────────────────────────────────────┘
+                │
+                ├──→ grid_exit_optimization.py
+                │       │
+                │       ├──→ exit_optimizer_core.py
+                │       │       ├──→ read_report_csv()
+                │       │       ├──→ load_ticks_for_window()
+                │       │       ├──→ simulate_trade()
+                │       │       └──→ compute_metrics()
+                │       │
+                │       └──→ best_config.txt ⭐
+                │
+                └──→ optimize_exit_ticks.py
+                        │
+                        └──→ exit_optimizer_core.py
+                    </pre>
+                </div>
+                
+                <h3>جریان داده‌ها</h3>
+                <ol>
+                    <li>
+                        <strong>مرحله توسعه:</strong>
+                        <ul>
+                            <li>اجرای <code>grid_exit_optimization.py</code> روی داده‌های تاریخی</li>
+                            <li>تولید <code>best_config.txt</code></li>
+                        </ul>
+                    </li>
+                    
+                    <li>
+                        <strong>مرحله اجرا:</strong>
+                        <ul>
+                            <li>ربات <code>main_metatrader_new.py</code> راه‌اندازی می‌شود</li>
+                            <li><code>LiveExitController</code> فایل <code>best_config.txt</code> را می‌خواند</li>
+                            <li>در هر تیک قیمت، <code>compute_updates()</code> فراخوانی می‌شود</li>
+                            <li>در صورت نیاز، SL/TP به‌روزرسانی می‌شود</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <div class="warning-box">
+                    <strong>⚠️ نکته مهم:</strong>
+                    اگر <code>best_config.txt</code> وجود نداشته باشد، فقط سیستم مرحله‌ای پایه 
+                    (DYNAMIC_RISK_CONFIG) فعال می‌شود و بهینه‌سازی پیشرفته غیرفعال است.
+                </div>
+            </section>
+            
+            <!-- بخش مثال عملی -->
+            <section>
+                <h2>📝 مثال عملی: یک معامله کامل</h2>
+                
+                <h3>سناریو: خرید EURUSD</h3>
+                
+                <div class="info-box">
+                    <strong>اطلاعات معامله:</strong>
+                    <ul>
+                        <li>Entry: 1.1000</li>
+                        <li>SL اولیه: 1.0950 (Risk = 50 پیپ)</li>
+                        <li>TP اولیه: 1.1100 (2R)</li>
+                        <li>بهترین تنظیمات: Trailing از 1.5R با فاصله 0.7R</li>
+                    </ul>
+                </div>
+                
+                <h4>مراحل معامله:</h4>
+                
+                <table>
+                    <tr>
+                        <th>قیمت</th>
+                        <th>R فعلی</th>
+                        <th>اقدام سیستم</th>
+                        <th>توضیح</th>
+                    </tr>
+                    <tr>
+                        <td>1.1000</td>
+                        <td>0.0R</td>
+                        <td>ورود</td>
+                        <td>پوزیشن Buy باز می‌شود</td>
+                    </tr>
+                    <tr>
+                        <td>1.1075</td>
+                        <td>+1.5R</td>
+                        <td>Trailing فعال</td>
+                        <td>Trailing Stop شروع می‌شود. SL فعلی: 1.0950</td>
+                    </tr>
+                    <tr>
+                        <td>1.1095</td>
+                        <td>+1.9R</td>
+                        <td>Trailing به‌روز</td>
+                        <td>SL به 1.1022 (1.1095 - 0.7R) منتقل می‌شود</td>
+                    </tr>
+                    <tr>
+                        <td>1.1120</td>
+                        <td>+2.4R</td>
+                        <td>Trailing به‌روز</td>
+                        <td>SL به 1.1047 (1.1120 - 0.7R) منتقل می‌شود</td>
+                    </tr>
+                    <tr>
+                        <td>1.1080</td>
+                        <td>+1.6R</td>
+                        <td>خروج با Trailing</td>
+                        <td>قیمت به SL (1.1047) برخورد می‌کند → پوزیشن بسته می‌شود</td>
+                    </tr>
+                </table>
+                
+                <div class="success-box">
+                    <strong>✅ نتیجه:</strong>
+                    اگر از TP ثابت استفاده می‌شد → سود = 2R
+                    اما با Trailing Stop → سود = 1.6R (اما احتمال سود بیشتر وجود داشت)
+                    
+                    در معاملات دیگر، Trailing ممکن است سود را تا 5R یا بیشتر ببرد!
+                </div>
+            </section>
+            
+            <!-- بخش راهنما -->
+            <section>
+                <h2>🚀 راهنمای شروع سریع</h2>
+                
+                <h3>مرحله 1: آماده‌سازی داده‌ها</h3>
+                <ol>
+                    <li>فایل <code>ReportHistory.csv</code> را در ریشه پروژه قرار دهید</li>
+                    <li>پوشه <code>ticks/</code> را با فایل‌های <code>Ticks_SYMBOL_YYYY_MM.csv</code> ایجاد کنید</li>
+                </ol>
+                
+                <h3>مرحله 2: اجرای بهینه‌سازی</h3>
+                <div class="code-block">
+cd D:\MyProject\Trading\new_simple_bot_for_test
+python grid_exit_optimization.py
+                </div>
+                
+                <h3>مرحله 3: بررسی نتایج</h3>
+                <ul>
+                    <li>فایل <code>best_config.txt</code> را بررسی کنید</li>
+                    <li>نمودار <code>equity_curve_best.png</code> را مشاهده کنید</li>
+                    <li>جدول <code>exit_grid_top20.csv</code> را در Excel باز کنید</li>
+                </ul>
+                
+                <h3>مرحله 4: راه‌اندازی ربات</h3>
+                <div class="code-block">
+python main_metatrader_new.py
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 نکته:</strong>
+                    اگر <code>best_config.txt</code> موجود باشد، سیستم بهینه‌سازی به‌صورت خودکار فعال می‌شود.
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>📚 مستندات ربات تریدر MetaTrader 5 - سیستم بهینه‌سازی خروج</p>
+            <p>نسخه 1.0.0 | آخرین به‌روزرسانی: 2025</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
