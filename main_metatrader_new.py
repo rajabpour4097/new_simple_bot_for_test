@@ -106,6 +106,21 @@ def main():
     # راه‌اندازی کنترلر خروج بهینه‌ساز (اختیاری: اگر best_config.txt موجود باشد)
     project_root = os.path.dirname(os.path.abspath(__file__))
     exit_controller = LiveExitController(project_root)
+    
+    # گزارش وضعیت بهینه‌ساز
+    optimizer_status = "✅ YES" if exit_controller.has_params() else "❌ NO"
+    print(f"⚙️  Exit Optimizer Status: {optimizer_status}")
+    if exit_controller.has_params():
+        params = exit_controller.params
+        be_info = f"BE@{params.get('be_trigger_r', 'N/A')}R" if params.get('be_trigger_r') is not None else "No BE"
+        trail_info = f"Trailing@{params.get('trailing_start_r', 'N/A')}R (gap: {params.get('trailing_gap_r', 'N/A')}R)" if params.get('trailing_start_r') is not None else "No Trailing"
+        tp_info = f"TP@{params.get('tp_r', 'N/A')}R" if params.get('tp_r') is not None else "No TP"
+        print(f"   📋 Config: {be_info}, {trail_info}, {tp_info}")
+        print(f"   📊 Optimized on real trading data")
+    else:
+        print(f"   ⚠️  best_config.txt not found - optimizer disabled")
+        print(f"   💡 Using default DYNAMIC_RISK_CONFIG stages instead")
+    print("-" * 50)
 
     def _digits():
         info = mt5.symbol_info(MT5_CONFIG['symbol'])
