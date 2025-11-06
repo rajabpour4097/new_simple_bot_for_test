@@ -20,7 +20,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPORT_PATH = os.path.join(PROJECT_ROOT, "ReportHistory.csv")
 
 
-def get_trade_window(row: pd.Series) -> (pd.Timestamp, pd.Timestamp):
+def get_trade_window(row: pd.Series) -> tuple[pd.Timestamp, pd.Timestamp]:
     start = row["Time"]
     end = row["Time.1"] if pd.notna(row.get("Time.1", pd.NaT)) else (start + pd.Timedelta(days=3))
     return start, end
@@ -38,8 +38,8 @@ def main():
     else:
         # default recommended config
         p_dict = {
-            "scaleout_r": None,
-            "scaleout_frac": 0.0,
+            "scaleout_r": 1.0,
+            "scaleout_frac": 0.5,
             "be_trigger_r": None,
             "be_back_r": 0.0,
             "tp_r": None,

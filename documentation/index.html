@@ -503,10 +503,20 @@ if profit_R >= 2.0:
                     </tr>
                     <tr>
                         <td><strong>Scale-Out</strong></td>
-                        <td>بستن بخشی از پوزیشن در R مشخص (آینده)</td>
+                        <td>بستن بخشی از پوزیشن در R مشخص ✅ <span style="color: #27ae60; font-weight: bold;">(فعال)</span></td>
                         <td>بستن 50% در 1R</td>
                     </tr>
                 </table>
+                
+                <div class="info-box" style="background-color: #d4edda; border-left: 4px solid #27ae60;">
+                    <strong>🎯 ویژگی جدید فعال: Scale-Out</strong><br>
+                    سیستم اکنون به‌صورت خودکار 50% از پوزیشن را در 1R می‌بندد:<br>
+                    <ul style="margin: 10px 0 0 20px;">
+                        <li>✅ قفل کردن بخشی از سود در اوایل معامله</li>
+                        <li>✅ کاهش ریسک و استرس روانی</li>
+                        <li>✅ امکان ادامه سود در 50% باقیمانده با Trailing Stop</li>
+                    </ul>
+                </div>
                 
                 <div class="warning-box">
                     <strong>⚠️ توجه:</strong> 
@@ -581,8 +591,8 @@ if profit_R >= 2.0:
                     <div class="code-block">
 @dataclass
 class ExitParams:
-    scaleout_r: Optional[float] = None      # R برای Scale-Out
-    scaleout_frac: float = 0.0              # درصد بستن (0-1)
+    scaleout_r: Optional[float] = None      # R برای Scale-Out (فعلی: 1.0)
+    scaleout_frac: float = 0.0              # درصد بستن 0-1 (فعلی: 0.5)
     be_trigger_r: Optional[float] = None    # R برای فعال شدن Break-Even
     be_back_r: float = 0.0                  # فاصله BE از Entry (R)
     tp_r: Optional[float] = None            # Take Profit ثابت (R)
@@ -731,11 +741,11 @@ grid_space = {
                     
                     <h4>نحوه استفاده:</h4>
                     <div class="code-block">
-# تست با تنظیمات پیش‌فرض
+# تست با تنظیمات پیش‌فرض (Scale-Out فعال: 50% در 1R)
 python optimize_exit_ticks.py
 
 # تست با تنظیمات دستی
-python optimize_exit_ticks.py --params '{"trailing_start_r": 1.5, "trailing_gap_r": 0.7}'
+python optimize_exit_ticks.py --params '{"scaleout_r": 1.0, "scaleout_frac": 0.5, "trailing_start_r": 1.5, "trailing_gap_r": 0.7}'
                     </div>
                 </section>
             </section>
