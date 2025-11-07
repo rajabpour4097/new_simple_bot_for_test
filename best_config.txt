@@ -1,26 +1,26 @@
 Best Exit Parameters
 {
   "scaleout_r": 1.0,
-  "scaleout_frac": 0.5,
+  "scaleout_frac": 0.0,
   "be_trigger_r": NaN,
   "be_back_r": 0.0,
-  "tp_r": 1.2,
+  "tp_r": NaN,
   "trailing_start_r": 1.5,
   "trailing_gap_r": 0.4
 }
 
 Metrics (grid):
 {
-  "average_R": NaN,
-  "profit_factor": NaN,
-  "win_rate": NaN,
-  "max_drawdown_R": NaN,
-  "n_trades": 0
+  "average_R": 0.40149056698062974,
+  "profit_factor": 1.8408576025443375,
+  "win_rate": 0.5225225225225225,
+  "max_drawdown_R": 6.0,
+  "n_trades": 111
 }
 
 Monte Carlo MaxDD (R):
 {
-  "p50": NaN,
-  "p95": NaN,
-  "p99": NaN
+  "p50": 6.886486486486818,
+  "p95": 10.761856130218268,
+  "p99": 12.849344364391593
 }

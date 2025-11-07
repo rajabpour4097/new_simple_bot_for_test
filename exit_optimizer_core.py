@@ -15,6 +15,16 @@ import matplotlib.pyplot as plt
 # Data loading and parsing
 # -----------------------------
 
+# Global cache for tick files to avoid repeated loading
+_TICKS_CACHE: Dict[str, pd.DataFrame] = {}
+
+
+def clear_ticks_cache() -> None:
+    """Clear the global ticks cache to free memory."""
+    global _TICKS_CACHE
+    _TICKS_CACHE.clear()
+
+
 REPORT_TIME_FORMATS = ["%Y.%m.%d %H:%M:%S", "%Y.%m.%d %H:%M"]
 
 
@@ -64,9 +74,20 @@ def read_report_csv(path: str) -> pd.DataFrame:
     return df
 
 
+# Global cache for tick files to avoid repeated loading
+_TICKS_CACHE: Dict[str, pd.DataFrame] = {}
+
+
 def read_ticks_csv(path: str) -> pd.DataFrame:
+    # Check cache first
+    if path in _TICKS_CACHE:
+        return _TICKS_CACHE[path]
+    
     if not os.path.exists(path):
-        return pd.DataFrame(columns=["time", "bid", "ask"])  # allow missing months
+        empty_df = pd.DataFrame(columns=["time", "bid", "ask"])
+        _TICKS_CACHE[path] = empty_df
+        return empty_df
+    
     df = pd.read_csv(path)
     for c in ["time", "bid", "ask"]:
         if c not in df.columns:
@@ -74,6 +95,9 @@ def read_ticks_csv(path: str) -> pd.DataFrame:
     df["time"] = pd.to_datetime(df["time"], errors="coerce")
     df = df.dropna(subset=["time"]).copy()
     df = df.sort_values("time")
+    
+    # Cache the loaded dataframe
+    _TICKS_CACHE[path] = df
     return df
 
 
@@ -89,12 +113,25 @@ def load_ticks_for_window(symbol: str, start: pd.Timestamp, end: pd.Timestamp, r
     frames: List[pd.DataFrame] = []
     ticks_dir = os.path.join(root, "ticks")
     for y, m in month_keys:
-        path = os.path.join(ticks_dir, f"Ticks_{symbol}_{y:04d}_{m:02d}.csv")
-        frames.append(read_ticks_csv(path))
+        # Try both naming patterns
+        path1 = os.path.join(ticks_dir, f"Ticks_{symbol}_{y:04d}_{m:02d}.csv")
+        path2 = os.path.join(ticks_dir, f"{symbol}_{y:04d}_{m:02d}_ticks.csv")
+        
+        if os.path.exists(path1):
+            frames.append(read_ticks_csv(path1))
+        elif os.path.exists(path2):
+            frames.append(read_ticks_csv(path2))
+        # Skip else clause - don't append empty df if file doesn't exist
 
     if not frames:
         return pd.DataFrame(columns=["time", "bid", "ask"]).copy()
-    merged = pd.concat(frames, ignore_index=True) if len(frames) > 1 else frames[0]
+    
+    # Filter out empty frames before concat to avoid FutureWarning
+    non_empty_frames = [f for f in frames if not f.empty]
+    if not non_empty_frames:
+        return pd.DataFrame(columns=["time", "bid", "ask"]).copy()
+        
+    merged = pd.concat(non_empty_frames, ignore_index=True) if len(non_empty_frames) > 1 else non_empty_frames[0]
     if merged.empty:
         return merged
     # filter by window

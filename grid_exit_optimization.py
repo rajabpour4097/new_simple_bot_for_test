@@ -41,6 +41,9 @@ def run_grid_search() -> None:
         print("No trades in report after filtering. Exiting.")
         return
 
+    print(f"🔄 Starting grid search with {len(df_report)} trades")
+    print("📦 Tick file caching is enabled - first iteration will be slower, subsequent ones faster")
+
     # grid space definition per user spec
     grid_space = {
         "scaleout_r": [None, 1.0],
@@ -58,11 +61,21 @@ def run_grid_search() -> None:
     df_report = df_report.sort_values("Time")
     skipped_no_ticks = 0
     total_considered = 0
+    
+    # Count total parameter combinations
+    total_combinations = sum(1 for _ in grid_space_iter(grid_space))
+    print(f"🎯 Testing {total_combinations} parameter combinations")
 
+    combination_num = 0
     for params_dict in grid_space_iter(grid_space):
+        combination_num += 1
         params = ExitParams(**params_dict)
         r_values: List[float] = []
         reasons: List[str] = []
+        
+        # Print progress every 10 combinations
+        if combination_num % 10 == 0 or combination_num == 1:
+            print(f"⏳ Progress: {combination_num}/{total_combinations} combinations tested...")
 
         for _, row in df_report.iterrows():
             total_considered += 1
