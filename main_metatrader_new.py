@@ -11,7 +11,7 @@ from swing import get_swing_points
 from utils import BotState
 from save_file import log
 import inspect, os
-from metatrader5_config import MT5_CONFIG, TRADING_CONFIG, DYNAMIC_RISK_CONFIG
+from metatrader5_config import MT5_CONFIG, TRADING_CONFIG
 from live_exit_controller import LiveExitController
 from email_notifier import send_trade_email_async
 from analytics.hooks import log_signal, log_position_event
@@ -43,9 +43,21 @@ def main():
     last_swing_type = None
 
     print(f"🚀 MT5 Trading Bot Started...")
-    print(f"📊 Config: Symbol={MT5_CONFIG['symbol']}, Lot={MT5_CONFIG['lot_size']}, Win Ratio={win_ratio}")
+    print(f"📊 Config: Symbol={MT5_CONFIG['symbol']}, Risk={MT5_CONFIG.get('risk_percent', 2.0)}%, Win Ratio={win_ratio}")
     print(f"⏰ Trading Hours (Iran): {MT5_CONFIG['trading_hours']['start']} - {MT5_CONFIG['trading_hours']['end']}")
     print(f"🇮🇷 Current Iran Time: {mt5_conn.get_iran_time().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    # نمایش تنظیمات مدیریت خروج
+    from metatrader5_config import EXIT_MANAGEMENT_CONFIG
+    if EXIT_MANAGEMENT_CONFIG.get('enable'):
+        print(f"✅ Exit Management: ENABLED")
+        trailing_cfg = EXIT_MANAGEMENT_CONFIG.get('trailing_stop', {})
+        if trailing_cfg.get('enable'):
+            print(f"   🔥 Trailing Stop: Start={trailing_cfg['start_r']}R, Gap={trailing_cfg['gap_r']}R")
+        else:
+            print(f"   ❌ Trailing Stop: DISABLED")
+    else:
+        print(f"❌ Exit Management: DISABLED")
     
     # نمایش تنظیمات مدیریت پوزیشن
     prevent_multiple = TRADING_CONFIG.get('prevent_multiple_positions', True)
@@ -119,7 +131,6 @@ def main():
         print(f"   📊 Optimized on real trading data")
     else:
         print(f"   ⚠️  best_config.txt not found - optimizer disabled")
-        print(f"   💡 Using default DYNAMIC_RISK_CONFIG stages instead")
     print("-" * 50)
 
     def _digits():
@@ -182,7 +193,7 @@ def main():
             'risk': risk,
             'direction': 'buy' if pos.type == mt5.POSITION_TYPE_BUY else 'sell',
             'done_stages': set(),
-            'base_tp_R': DYNAMIC_RISK_CONFIG.get('base_tp_R', 2),
+            'base_tp_R': 2.0,  # مقدار پیش‌فرض برای مرجع
             'commission_locked': False
         }
         # رویداد ثبت پوزیشن
@@ -207,137 +218,104 @@ def main():
             pass
 
     def manage_open_positions():
-        if not DYNAMIC_RISK_CONFIG.get('enable'):
+        """
+        مدیریت پوزیشن‌های باز با Trailing Stop
+        فقط از EXIT_MANAGEMENT_CONFIG استفاده می‌کند (DYNAMIC_RISK_CONFIG غیرفعال)
+        """
+        # بررسی فعال بودن مدیریت خروج
+        from metatrader5_config import EXIT_MANAGEMENT_CONFIG
+        if not EXIT_MANAGEMENT_CONFIG.get('enable'):
             return
+        
+        # بررسی فعال بودن Trailing Stop
+        if not EXIT_MANAGEMENT_CONFIG.get('trailing_stop', {}).get('enable'):
+            return
+            
         positions = mt5_conn.get_positions()
         if not positions:
             return
         tick = mt5.symbol_info_tick(MT5_CONFIG['symbol'])
         if not tick:
             return
-        stages_cfg = DYNAMIC_RISK_CONFIG.get('stages', [])
+        
+        # تنظیمات Trailing Stop
+        trailing_start_r = EXIT_MANAGEMENT_CONFIG['trailing_stop']['start_r']
+        trailing_gap_r = EXIT_MANAGEMENT_CONFIG['trailing_stop']['gap_r']
+        
         for pos in positions:
+            # ثبت پوزیشن اگر جدید است
             if pos.ticket not in position_states:
                 register_position(pos)
+            
             st = position_states.get(pos.ticket)
             if not st:
                 continue
+            
             entry = st['entry']
             risk = st['risk']
             direction = st['direction']
             cur_price = tick.bid if direction == 'buy' else tick.ask
-            # profit in price
+            
+            # محاسبه سود بر حسب R
             if direction == 'buy':
                 price_profit = cur_price - entry
             else:
                 price_profit = entry - cur_price
             profit_R = price_profit / risk if risk else 0.0
-            modified_any = False
-
-            # محاسبه ارزش پولی 1R تقریبی (بدون اسپرد) برای تبدیل کامیشن به R:
-            # risk_abs_price = risk (فاصله قیمتی) * volume * contract ارزش واقعی - ساده‌سازی: فقط نسبت بر اساس فاصله قیمتی.
-            # برای دقت بیشتر باید tick_value استفاده شود؛ اینجا ساده نگه می‌داریم.
-
-            # عبور از مراحل R-based
-            for stage_cfg in stages_cfg:
-                sid = stage_cfg.get('id')
-                if sid in st['done_stages']:
-                    continue
-                new_sl = None
-                new_tp = None
-                event_name = None
-                locked_R = None
-
-                # R-based stage
-                trigger_R = stage_cfg.get('trigger_R')
-                if trigger_R is not None and profit_R >= trigger_R:
-                    sl_lock_R = stage_cfg.get('sl_lock_R', trigger_R)
-                    tp_R = stage_cfg.get('tp_R')
-                    # SL placement
-                    if direction == 'buy':
-                        new_sl = entry + sl_lock_R * risk
-                        if tp_R:
-                            new_tp = entry + tp_R * risk
-                    else:
-                        new_sl = entry - sl_lock_R * risk
-                        if tp_R:
-                            new_tp = entry - tp_R * risk
-                    event_name = sid
-                    locked_R = sl_lock_R
-
-                if new_sl is not None:
-                    # Round
-                    new_sl_r = _round(new_sl)
-                    new_tp_r = _round(new_tp) if new_tp is not None else pos.tp
-                    # Apply only if improves
-                    apply = False
-                    if direction == 'buy' and new_sl_r > pos.sl:
-                        apply = True
-                    if direction == 'sell' and new_sl_r < pos.sl:
-                        apply = True
-                    if apply:
-                        res = mt5_conn.modify_sl_tp(pos.ticket, new_sl=new_sl_r, new_tp=new_tp_r)
-                        if res and getattr(res, 'retcode', None) == 10009:
-                            st['done_stages'].add(sid)
-                            modified_any = True
-                            log(f'⚙️ Dynamic Risk Stage {sid} applied: ticket={pos.ticket} | Profit: {profit_R:.2f}R | SL: {new_sl_r} | TP: {new_tp_r}', color='cyan')
-                            try:
-                                log_position_event(
-                                    symbol=MT5_CONFIG['symbol'],
-                                    ticket=pos.ticket,
-                                    event=event_name or sid,
-                                    direction=direction,
-                                    entry=entry,
-                                    current_price=cur_price,
-                                    sl=new_sl_r,
-                                    tp=new_tp_r,
-                                    profit_R=profit_R,
-                                    stage=None,
-                                    risk_abs=risk,
-                                    locked_R=locked_R,
-                                    volume=pos.volume,
-                                    note=f'stage {sid} trigger'
-                                )
-                            except Exception:
-                                pass
-            if modified_any:
-                position_states[pos.ticket] = st
-
-            # --- بهینه‌ساز: Trailing/BE/TP زنده بر اساس best_config.txt ---
-            if exit_controller.has_params():
-                try:
-                    new_sl, new_tp, new_state = exit_controller.compute_updates(
-                        entry=entry,
-                        risk=risk,
-                        direction=direction,
-                        current_price=cur_price,
-                        current_sl=pos.sl,
-                        current_tp=pos.tp,
-                        state=st.get('optimizer_state', {})
-                    )
-                    if new_sl is not None or new_tp is not None:
-                        # only apply if improves current SL/TP
-                        apply = False
-                        target_sl = pos.sl
-                        target_tp = pos.tp
-                        if new_sl is not None:
-                            if direction == 'buy' and (pos.sl is None or new_sl > pos.sl):
-                                target_sl = float(f"{new_sl:.{_digits()}f}")
-                                apply = True
-                            if direction == 'sell' and (pos.sl is None or new_sl < pos.sl):
-                                target_sl = float(f"{new_sl:.{_digits()}f}")
-                                apply = True
-                        if new_tp is not None:
-                            target_tp = float(f"{new_tp:.{_digits()}f}")
-                            apply = True
-                        if apply:
-                            res = mt5_conn.modify_sl_tp(pos.ticket, new_sl=target_sl, new_tp=target_tp)
-                            if res and getattr(res, 'retcode', None) == 10009:
-                                st['optimizer_state'] = new_state
-                                position_states[pos.ticket] = st
-                                log(f"⚙️ Optimizer Exit Update: ticket={pos.ticket} SL={target_sl} TP={target_tp} profit={profit_R:.2f}R", color='cyan')
-                except Exception as _e:
-                    log(f"Optimizer exit error: {_e}", color='red')
+            
+            # بررسی فعال شدن Trailing Stop
+            trailing_active = st.get('trailing_active', False)
+            
+            # فعال‌سازی Trailing Stop اگر به 1.5R رسید
+            if not trailing_active and profit_R >= trailing_start_r:
+                st['trailing_active'] = True
+                trailing_active = True
+                log(f'🔥 Trailing Stop ACTIVATED for ticket {pos.ticket} at {profit_R:.2f}R', color='yellow')
+            
+            # اگر Trailing فعال است، SL را جابجا کن
+            if trailing_active:
+                # محاسبه Trailing Stop با فاصله gap_r از قیمت فعلی
+                gap = trailing_gap_r * risk
+                if direction == 'buy':
+                    trail_sl = cur_price - gap
+                else:
+                    trail_sl = cur_price + gap
+                
+                trail_sl_r = _round(trail_sl)
+                
+                # فقط اگر SL جدید بهتر از قبلی باشد
+                apply = False
+                if direction == 'buy' and trail_sl_r > pos.sl:
+                    apply = True
+                elif direction == 'sell' and trail_sl_r < pos.sl:
+                    apply = True
+                
+                if apply:
+                    res = mt5_conn.modify_sl_tp(pos.ticket, new_sl=trail_sl_r, new_tp=pos.tp)
+                    if res and getattr(res, 'retcode', None) == 10009:
+                        log(f'⬆️ Trailing Stop updated: ticket={pos.ticket} | Profit: {profit_R:.2f}R | New SL: {trail_sl_r}', color='cyan')
+                        try:
+                            log_position_event(
+                                symbol=MT5_CONFIG['symbol'],
+                                ticket=pos.ticket,
+                                event='trailing_update',
+                                direction=direction,
+                                entry=entry,
+                                current_price=cur_price,
+                                sl=trail_sl_r,
+                                tp=pos.tp,
+                                profit_R=profit_R,
+                                stage=None,
+                                risk_abs=risk,
+                                locked_R=(trail_sl_r - entry) / risk if direction == 'buy' else (entry - trail_sl_r) / risk,
+                                volume=pos.volume,
+                                note=f'trailing stop update at {profit_R:.2f}R'
+                            )
+                        except Exception:
+                            pass
+            
+            # ذخیره وضعیت
+            position_states[pos.ticket] = st
 
     while True:
         try:
@@ -673,17 +651,18 @@ def main():
                         continue
 
                     stop_distance = abs(buy_entry_price - stop)
-                    reward_end = buy_entry_price + (stop_distance * win_ratio)
                     log(f'stop = {stop}', color='green')
-                    log(f'reward_end = {reward_end}', color='green')
+                    log(f'📊 No TP - Trailing Stop will manage profit', color='yellow')
 
-                    # ارسال سفارش BUY با هر stop و reward
+                    # ارسال سفارش BUY بدون TP - فقط Trailing Stop مدیریت می‌کند
+                    # استفاده از risk_percent از MT5_CONFIG برای محاسبه حجم خودکار
+                    risk_percent = MT5_CONFIG.get('risk_percent', 2.0)  # 2% ریسک
                     result = mt5_conn.open_buy_position(
                         tick=last_tick,
                         sl=stop,
-                        tp=reward_end,
+                        tp=0,  # بدون TP - Trailing Stop به تنهایی کافی است
                         comment=f"Bullish Swing {last_swing_type}",
-                        risk_pct=0.01  # مثلا 1% ریسک
+                        risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.02)
                     )
                     # ارسال ایمیل غیرمسدودکننده
                     try:
@@ -695,7 +674,7 @@ def main():
                                 f"Type: BUY (Bullish Swing)\n"
                                 f"Entry: {buy_entry_price}\n"
                                 f"SL: {stop}\n"
-                                f"TP: {reward_end}\n"
+                                f"TP: None (Trailing Stop will manage)\n"
                             )
                         )
                     except Exception as _e:
@@ -840,17 +819,18 @@ def main():
                         continue
 
                     stop_distance = abs(sell_entry_price - stop)
-                    reward_end = sell_entry_price - (stop_distance * win_ratio)
                     log(f'stop = {stop}', color='red')
-                    log(f'reward_end = {reward_end}', color='red')
+                    log(f'📊 No TP - Trailing Stop will manage profit', color='yellow')
 
-                    # ارسال سفارش SELL با هر stop و reward
+                    # ارسال سفارش SELL بدون TP - فقط Trailing Stop مدیریت می‌کند
+                    # استفاده از risk_percent از MT5_CONFIG برای محاسبه حجم خودکار
+                    risk_percent = MT5_CONFIG.get('risk_percent', 2.0)  # 2% ریسک
                     result = mt5_conn.open_sell_position(
                         tick=last_tick,
                         sl=stop,
-                        tp=reward_end,
+                        tp=0,  # بدون TP - Trailing Stop به تنهایی کافی است
                         comment=f"Bearish Swing {last_swing_type}",
-                        risk_pct=0.01  # مثلا 1% ریسک
+                        risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.02)
                     )
                     
                     # ارسال ایمیل غیرمسدودکننده
@@ -863,7 +843,7 @@ def main():
                                 f"Type: SELL (Bearish Swing)\n"
                                 f"Entry: {sell_entry_price}\n"
                                 f"SL: {stop}\n"
-                                f"TP: {reward_end}\n"
+                                f"TP: None (Trailing Stop will manage)\n"
                             )
                         )
                     except Exception as _e:

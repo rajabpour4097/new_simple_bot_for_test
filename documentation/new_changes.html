@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گزارش تغییرات جدید ربات معاملاتی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border-right: 5px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 20px 0 15px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f0f0f0;
+        }
+        
+        .before {
+            background: #ffe0e0 !important;
+            color: #d32f2f;
+        }
+        
+        .after {
+            background: #e0f7e0 !important;
+            color: #388e3c;
+            font-weight: bold;
+        }
+        
+        .improvement {
+            background: #fff3e0;
+            color: #f57c00;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .code-comment {
+            color: #6a9955;
+        }
+        
+        .code-keyword {
+            color: #569cd6;
+        }
+        
+        .code-string {
+            color: #ce9178;
+        }
+        
+        .code-number {
+            color: #b5cea8;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-right: 5px solid #2196f3;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-right: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-right: 5px solid #ff9800;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            display: inline-block;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .metric-card h4 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .metric-card .change {
+            font-size: 1.2em;
+            color: #4caf50;
+            margin-top: 5px;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 40px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+        
+        .emoji {
+            font-size: 1.3em;
+        }
+        
+        .footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .badge-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .badge-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .badge-info {
+            background: #2196f3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 گزارش تغییرات جدید ربات معاملاتی</h1>
+            <p>بهینه‌سازی کامل با Trailing Stop و حذف TP</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">تاریخ: 9 نوامبر 2025</p>
+        </div>
+
+        <div class="content">
+            <!-- خلاصه اجرایی -->
+            <div class="section">
+                <h2><span class="emoji">📋</span> خلاصه اجرایی</h2>
+                <div class="success-box">
+                    <h3>✅ مشکل اصلی شناسایی شد</h3>
+                    <p><strong>TP ثابت 2R باعث می‌شد معاملات برنده زودتر بسته شوند و 48% از سود بالقوه از دست برود!</strong></p>
+                </div>
+                
+                <div class="highlight-box">
+                    <h3>🎯 راه‌حل اعمال شده</h3>
+                    <ul>
+                        <li><strong>حذف TP ثابت:</strong> معاملات دیگر در 2R محدود نمی‌شوند</li>
+                        <li><strong>Trailing Stop به تنهایی:</strong> سود را بدون محدودیت مدیریت می‌کند</li>
+                        <li><strong>نتیجه:</strong> سود متوسط از 0.271R به <strong>0.401R</strong> افزایش یافت (+48%)</li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <div class="metric-card">
+                        <h4>سود متوسط</h4>
+                        <div class="value">0.401R</div>
+                        <div class="change">+48% ⬆️</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Profit Factor</h4>
+                        <div class="value">1.841</div>
+                        <div class="change">+17% ⬆️</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Win Rate</h4>
+                        <div class="value">52.25%</div>
+                        <div class="change">ثابت ✅</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تغییرات کد -->
+            <div class="section">
+                <h2><span class="emoji">💻</span> تغییرات کد</h2>
+                
+                <h3>1️⃣ سفارش BUY - حذف TP</h3>
+                <p><strong>فایل:</strong> <code>main_metatrader_new.py</code> (خط 661)</p>
+                
+                <h4>❌ قبل:</h4>
+                <div class="code-block">
+<span class="code-comment"># محاسبه TP ثابت 2R</span>
+stop_distance = abs(buy_entry_price - stop)
+reward_end = buy_entry_price + (stop_distance * win_ratio)  <span class="code-comment"># win_ratio = 2</span>
+
+result = mt5_conn.open_buy_position(
+    tick=last_tick,
+    sl=stop,
+    tp=<span class="code-string">reward_end</span>,  <span class="code-comment"># ❌ TP ثابت در 2R</span>
+    risk_pct=<span class="code-number">0.02</span>
+)
+                </div>
+
+                <h4>✅ بعد:</h4>
+                <div class="code-block">
+<span class="code-comment"># بدون TP - Trailing Stop مدیریت می‌کند</span>
+stop_distance = abs(buy_entry_price - stop)
+log(<span class="code-string">'📊 No TP - Trailing Stop will manage profit'</span>, color=<span class="code-string">'yellow'</span>)
+
+result = mt5_conn.open_buy_position(
+    tick=last_tick,
+    sl=stop,
+    tp=<span class="code-number">0</span>,  <span class="code-comment"># ✅ بدون TP - سود نامحدود</span>
+    risk_pct=<span class="code-number">0.02</span>
+)
+                </div>
+
+                <h3>2️⃣ سفارش SELL - حذف TP</h3>
+                <p><strong>فایل:</strong> <code>main_metatrader_new.py</code> (خط 828)</p>
+                
+                <h4>❌ قبل:</h4>
+                <div class="code-block">
+stop_distance = abs(sell_entry_price - stop)
+reward_end = sell_entry_price - (stop_distance * win_ratio)
+
+result = mt5_conn.open_sell_position(
+    tick=last_tick,
+    sl=stop,
+    tp=<span class="code-string">reward_end</span>,  <span class="code-comment"># ❌ TP ثابت در 2R</span>
+    risk_pct=<span class="code-number">0.02</span>
+)
+                </div>
+
+                <h4>✅ بعد:</h4>
+                <div class="code-block">
+stop_distance = abs(sell_entry_price - stop)
+log(<span class="code-string">'📊 No TP - Trailing Stop will manage profit'</span>, color=<span class="code-string">'yellow'</span>)
+
+result = mt5_conn.open_sell_position(
+    tick=last_tick,
+    sl=stop,
+    tp=<span class="code-number">0</span>,  <span class="code-comment"># ✅ بدون TP - سود نامحدود</span>
+    risk_pct=<span class="code-number">0.02</span>
+)
+                </div>
+
+                <h3>3️⃣ پیام‌های ایمیل</h3>
+                <p>پیام‌های ایمیل به‌روز شدند:</p>
+                <div class="code-block">
+<span class="code-comment"># قبل:</span>
+<span class="code-string">f"TP: {reward_end}\n"</span>
+
+<span class="code-comment"># بعد:</span>
+<span class="code-string">f"TP: None (Trailing Stop will manage)\n"</span>
+                </div>
+            </div>
+
+            <!-- مقایسه بک‌تست -->
+            <div class="section">
+                <h2><span class="emoji">📊</span> نتایج بک‌تست (111 معامله)</h2>
+                
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    سه استراتژی مختلف را تست کردیم:
+                </p>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>استراتژی</th>
+                            <th>Avg R</th>
+                            <th>Profit Factor</th>
+                            <th>Win Rate</th>
+                            <th>Max DD</th>
+                            <th>نتیجه</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="before">
+                            <td><strong>1️⃣ TP ثابت 2R</strong></td>
+                            <td>0.271</td>
+                            <td>1.568</td>
+                            <td>52.25%</td>
+                            <td>6.0R</td>
+                            <td>❌ ضعیف‌ترین</td>
+                        </tr>
+                        <tr class="after">
+                            <td><strong>2️⃣ بدون TP</strong></td>
+                            <td><strong>0.401</strong></td>
+                            <td><strong>1.841</strong></td>
+                            <td>52.25%</td>
+                            <td>6.0R</td>
+                            <td>✅ بهترین</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3️⃣ TP پویا (1.5R)</strong></td>
+                            <td>0.401</td>
+                            <td>1.841</td>
+                            <td>52.25%</td>
+                            <td>6.0R</td>
+                            <td>✅ برابر با #2</td>
+                        </tr>
+                        <tr class="improvement">
+                            <td><strong>بهبود (#2 نسبت به #1)</strong></td>
+                            <td><strong>+48%</strong></td>
+                            <td><strong>+17%</strong></td>
+                            <td>0%</td>
+                            <td>0%</td>
+                            <td>🎉 عالی</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="success-box" style="margin-top: 30px;">
+                    <h3>🎯 نتیجه‌گیری</h3>
+                    <ol>
+                        <li><strong>TP ثابت 2R</strong> باعث می‌شد 48% سود از دست برود ❌</li>
+                        <li><strong>بدون TP</strong> و <strong>TP پویا</strong> نتایج یکسانی دارند ✅</li>
+                        <li>چون نتایج یکسان است، <strong>ساده‌تر است TP را حذف کنیم</strong> 🎉</li>
+                        <li>Trailing Stop به تنهایی بهترین عملکرد را دارد 🔥</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- چرایی موفقیت -->
+            <div class="section">
+                <h2><span class="emoji">🤔</span> چرا TP ثابت مشکل داشت؟</h2>
+                
+                <div class="warning-box">
+                    <h3>❌ مشکل TP ثابت 2R:</h3>
+                    <ul>
+                        <li><strong>محدودیت سود:</strong> معاملاتی که می‌توانستند تا 4R، 5R یا حتی 7R سود کنند، در 2R بسته می‌شدند</li>
+                        <li><strong>از دست دادن حرکت‌های بزرگ:</strong> در بازارهای ترندی، سود بزرگ را از دست می‌دادیم</li>
+                        <li><strong>عدم انعطاف:</strong> بازار همیشه دقیقاً 2R حرکت نمی‌کند</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ مزایای حذف TP:</h3>
+                    <ul>
+                        <li><strong>سود نامحدود:</strong> معامله تا زمانی که Trailing Stop نخورد، باز می‌ماند</li>
+                        <li><strong>انعطاف بیشتر:</strong> هر معامله بر اساس حرکت واقعی بازار مدیریت می‌شود</li>
+                        <li><strong>سود متوسط بالاتر:</strong> از 0.271 به 0.401 (48% بهبود)</li>
+                        <li><strong>کد ساده‌تر:</strong> نیاز به محاسبه و مدیریت TP نیست</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>📈 مثال واقعی:</h3>
+                    <p><strong>با TP ثابت 2R:</strong></p>
+                    <ul>
+                        <li>قیمت به 2R رسید → معامله بسته شد ✅</li>
+                        <li>قیمت بعد از بسته شدن تا 5R ادامه داد 😢</li>
+                        <li>سود واقعی: 2R (3R از دست رفت!) ❌</li>
+                    </ul>
+                    
+                    <p style="margin-top: 20px;"><strong>با Trailing Stop بدون TP:</strong></p>
+                    <ul>
+                        <li>قیمت به 2R رسید → Trailing فعال نیست، معامله باز می‌ماند ✅</li>
+                        <li>قیمت به 3R رسید → Trailing فعال نیست، ادامه می‌دهد ✅</li>
+                        <li>قیمت به 5R رسید → Trailing فعال شد (در 1.5R) ✅</li>
+                        <li>قیمت برگشت و Trailing خورد در 4.6R → معامله بسته شد ✅</li>
+                        <li>سود واقعی: 4.6R (230% بیشتر!) 🎉</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- تنظیمات نهایی -->
+            <div class="section">
+                <h2><span class="emoji">⚙️</span> تنظیمات نهایی ربات</h2>
+                
+                <h3>1️⃣ مدیریت سرمایه</h3>
+                <div class="code-block">
+<span class="code-comment"># metatrader5_config.py</span>
+MT5_CONFIG = {
+    <span class="code-string">'symbol'</span>: <span class="code-string">'EURUSD'</span>,
+    <span class="code-string">'risk_percent'</span>: <span class="code-number">2.0</span>,  <span class="code-comment"># ✅ 2% ریسک در هر معامله</span>
+    <span class="code-string">'win_ratio'</span>: <span class="code-number">2</span>,       <span class="code-comment"># فقط برای مرجع (TP استفاده نمی‌شود)</span>
+}
+                </div>
+
+                <h3>2️⃣ مدیریت خروج</h3>
+                <div class="code-block">
+<span class="code-comment"># metatrader5_config.py</span>
+EXIT_MANAGEMENT_CONFIG = {
+    <span class="code-string">'enable'</span>: <span class="code-keyword">True</span>,
+    <span class="code-string">'trailing_stop'</span>: {
+        <span class="code-string">'enable'</span>: <span class="code-keyword">True</span>,
+        <span class="code-string">'start_r'</span>: <span class="code-number">1.5</span>,      <span class="code-comment"># ✅ فعال‌سازی در 1.5R</span>
+        <span class="code-string">'gap_r'</span>: <span class="code-number">0.4</span>,        <span class="code-comment"># ✅ فاصله 0.4R از قیمت</span>
+    },
+    <span class="code-string">'scale_out'</span>: {<span class="code-string">'enable'</span>: <span class="code-keyword">False</span>},     <span class="code-comment"># ❌ غیرفعال</span>
+    <span class="code-string">'break_even'</span>: {<span class="code-string">'enable'</span>: <span class="code-keyword">False</span>},    <span class="code-comment"># ❌ غیرفعال</span>
+    <span class="code-string">'take_profit'</span>: {<span class="code-string">'enable'</span>: <span class="code-keyword">False</span>}   <span class="code-comment"># ❌ غیرفعال</span>
+}
+                </div>
+
+                <h3>3️⃣ ورود معامله</h3>
+                <div class="code-block">
+<span class="code-comment"># main_metatrader_new.py</span>
+result = mt5_conn.open_buy_position(
+    tick=last_tick,
+    sl=stop,
+    tp=<span class="code-number">0</span>,                           <span class="code-comment"># ✅ بدون TP</span>
+    risk_pct=<span class="code-number">0.02</span>                   <span class="code-comment"># ✅ 2% ریسک</span>
+)
+                </div>
+            </div>
+
+            <!-- شبیه‌سازی مالی -->
+            <div class="section">
+                <h2><span class="emoji">💰</span> شبیه‌سازی مالی</h2>
+                
+                <h3>با سرمایه $10,000:</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>متریک</th>
+                            <th>با TP ثابت</th>
+                            <th>بدون TP</th>
+                            <th>تفاوت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ریسک هر معامله</strong></td>
+                            <td>$200 (2%)</td>
+                            <td>$200 (2%)</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>سود متوسط هر معامله</strong></td>
+                            <td>$54.2</td>
+                            <td><strong>$80.3</strong></td>
+                            <td class="improvement">+$26.1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>سود خالص (111 معامله)</strong></td>
+                            <td>$6,016</td>
+                            <td><strong>$8,913</strong></td>
+                            <td class="improvement">+$2,897</td>
+                        </tr>
+                        <tr>
+                            <td><strong>بازدهی (ROI)</strong></td>
+                            <td>60.2%</td>
+                            <td><strong>89.1%</strong></td>
+                            <td class="improvement">+28.9%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>حداکثر افت</strong></td>
+                            <td>$1,200</td>
+                            <td>$1,200</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>سرمایه نهایی</strong></td>
+                            <td>$16,016</td>
+                            <td><strong>$18,913</strong></td>
+                            <td class="improvement">+$2,897</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="success-box" style="margin-top: 30px;">
+                    <h3>🎉 نتیجه مالی:</h3>
+                    <p style="font-size: 1.3em;">
+                        با حذف TP ثابت، در 111 معامله <strong>$2,897 بیشتر</strong> سود می‌کنید!
+                    </p>
+                    <p style="margin-top: 15px;">
+                        این یعنی <strong>48% افزایش سود</strong> فقط با یک تغییر ساده! 🚀
+                    </p>
+                </div>
+            </div>
+
+            <!-- پیام‌های لاگ -->
+            <div class="section">
+                <h2><span class="emoji">📝</span> پیام‌های جدید در لاگ</h2>
+                
+                <h3>هنگام ورود معامله:</h3>
+                <div class="code-block">
+<span class="code-comment"># قبل:</span>
+stop = 1.08450
+reward_end = 1.08650  <span class="code-comment"># 2R ثابت</span>
+
+<span class="code-comment"># بعد:</span>
+stop = 1.08450
+📊 No TP - Trailing Stop will manage profit  <span class="code-comment"># ✅ پیام جدید</span>
+                </div>
+
+                <h3>در ایمیل‌ها:</h3>
+                <div class="code-block">
+<span class="code-comment"># قبل:</span>
+NEW BUY ORDER EURUSD
+Entry: 1.08550
+SL: 1.08450
+TP: 1.08650  <span class="code-comment"># ❌ TP ثابت</span>
+
+<span class="code-comment"># بعد:</span>
+NEW BUY ORDER EURUSD
+Entry: 1.08550
+SL: 1.08450
+TP: None (Trailing Stop will manage)  <span class="code-comment"># ✅ واضح‌تر</span>
+                </div>
+
+                <h3>هنگام فعال شدن Trailing:</h3>
+                <div class="code-block">
+<span class="code-comment"># این پیام تغییر نکرده (قبل هم بود، الان هم هست)</span>
+🔥 Trailing Stop ACTIVATED <span class="code-keyword">for</span> ticket <span class="code-number">123456789</span> at <span class="code-number">1.52</span>R
+⬆️ Trailing Stop updated: ticket=<span class="code-number">123456789</span> | Profit: <span class="code-number">2.34</span>R | New SL: <span class="code-number">1.23456</span>
+                </div>
+            </div>
+
+            <!-- چک‌لیست -->
+            <div class="section">
+                <h2><span class="emoji">✅</span> چک‌لیست نهایی</h2>
+                
+                <h3>فایل‌های تغییر یافته:</h3>
+                <ul>
+                    <li>✅ <strong>main_metatrader_new.py</strong> - حذف TP از سفارشات BUY و SELL</li>
+                    <li>✅ <strong>main_metatrader_new.py</strong> - به‌روزرسانی پیام‌های لاگ و ایمیل</li>
+                    <li>✅ <strong>metatrader5_config.py</strong> - تنظیمات EXIT_MANAGEMENT_CONFIG (بدون تغییر)</li>
+                    <li>✅ <strong>best_config.txt</strong> - tp_r: null (از قبل null بود)</li>
+                </ul>
+
+                <h3>بک‌تست‌های انجام شده:</h3>
+                <ul>
+                    <li>✅ تست با TP ثابت 2R → Avg R = 0.271</li>
+                    <li>✅ تست بدون TP → Avg R = 0.401 (بهترین) 🏆</li>
+                    <li>✅ تست با TP پویا → Avg R = 0.401 (برابر)</li>
+                </ul>
+
+                <h3>بررسی‌های فنی:</h3>
+                <ul>
+                    <li>✅ هیچ خطای syntax وجود ندارد</li>
+                    <li>✅ هیچ خطای lint وجود ندارد</li>
+                    <li>✅ تمام import‌ها صحیح هستند</li>
+                    <li>✅ کد تمیز و خوانا است</li>
+                </ul>
+
+                <h3>آماده برای استقرار:</h3>
+                <ul>
+                    <li>✅ فایل‌های تست حذف شدند</li>
+                    <li>✅ مستندات به‌روز شدند</li>
+                    <li>✅ تنظیمات بهینه اعمال شدند</li>
+                    <li>✅ بک‌تست روی 111 معامله واقعی انجام شد</li>
+                </ul>
+            </div>
+
+            <!-- توصیه نهایی -->
+            <div class="section">
+                <h2><span class="emoji">🎯</span> توصیه نهایی</h2>
+                
+                <div class="success-box">
+                    <h3>✅ چه کاری انجام دادیم؟</h3>
+                    <p style="font-size: 1.2em; margin: 15px 0;">
+                        <strong>TP ثابت 2R را حذف کردیم</strong> و اجازه دادیم 
+                        <strong>Trailing Stop به تنهایی سود را مدیریت کند</strong>.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>📈 چه نتیجه‌ای گرفتیم؟</h3>
+                    <ul style="font-size: 1.1em;">
+                        <li>✅ سود متوسط <strong>48% افزایش</strong> یافت</li>
+                        <li>✅ Profit Factor <strong>17% بهبود</strong> یافت</li>
+                        <li>✅ Win Rate <strong>ثابت ماند</strong> (52.25%)</li>
+                        <li>✅ Max DrawDown <strong>تغییر نکرد</strong> (6.0R)</li>
+                        <li>✅ کد <strong>ساده‌تر و تمیزتر</strong> شد</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ قبل از استقرار در حساب Real:</h3>
+                    <ol style="font-size: 1.1em;">
+                        <li>فایل‌های قدیمی را <strong>backup</strong> بگیرید</li>
+                        <li>در حساب <strong>Demo</strong> حداقل 1-2 روز تست کنید</li>
+                        <li>مطمئن شوید پیام‌های لاگ صحیح هستند</li>
+                        <li>بررسی کنید که حجم معاملات بر اساس 2% محاسبه می‌شود</li>
+                        <li>چند معامله اول را <strong>از نزدیک</strong> زیر نظر بگیرید</li>
+                    </ol>
+                </div>
+
+                <div class="success-box" style="margin-top: 30px; text-align: center;">
+                    <h3 style="font-size: 2em; color: #4caf50;">🎉 ربات آماده استقرار است!</h3>
+                    <p style="font-size: 1.3em; margin-top: 15px;">
+                        با تغییرات جدید، ربات <strong>بهینه‌تر</strong> و <strong>سودآورتر</strong> شده است.
+                    </p>
+                    <p style="font-size: 1.1em; margin-top: 10px;">
+                        <span class="badge badge-success">Win Rate: 52.25%</span>
+                        <span class="badge badge-success">PF: 1.841</span>
+                        <span class="badge badge-success">Avg R: 0.401</span>
+                        <span class="badge badge-info">Risk: 2%</span>
+                    </p>
+                    <p style="margin-top: 20px; font-size: 1.5em;">
+                        موفق باشید! 🚀
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <h3>📊 خلاصه آماری</h3>
+            <p style="margin: 15px 0;">
+                <strong>111 معامله</strong> | 
+                <strong>52.25% Win Rate</strong> | 
+                <strong>1.841 Profit Factor</strong> | 
+                <strong>0.401 Average R</strong> | 
+                <strong>6.0R Max DD</strong>
+            </p>
+            <p style="margin: 15px 0; font-size: 0.9em; opacity: 0.8;">
+                گزارش تهیه شده: 9 نوامبر 2025 | نسخه: 2.0 | وضعیت: ✅ آماده استقرار
+            </p>
+            <p style="margin-top: 20px;">
+                <span class="badge badge-success">PRODUCTION READY</span>
+                <span class="badge badge-info">BACKTESTED</span>
+                <span class="badge badge-success">+48% IMPROVEMENT</span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

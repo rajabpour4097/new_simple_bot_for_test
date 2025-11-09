@@ -50,7 +50,8 @@ MY_CUSTOM_TIME_IRAN = {
 # تنظیمات MT5
 MT5_CONFIG = {
     'symbol': 'EURUSD',
-    'lot_size': 0.01,
+    'lot_size': 0.01,  # خودکار محاسبه می‌شود بر اساس ریسک 2%
+    'risk_percent': 2.0,  # ریسک 2 درصد در هر معامله
     'win_ratio': 2,
     'magic_number': 234000,
     'deviation': 20,
@@ -75,14 +76,30 @@ TRADING_CONFIG = {
     'position_check_mode': 'all',  # 'all': همه پوزیشن‌ها، 'conflicting': فقط پوزیشن‌های مخالف
 }
 
-# مدیریت پویا چند مرحله‌ای جدید - 19 مرحله (2R تا 20R)
-# مراحل بر اساس درخواست:
-# 1) 2.0R: SL روی +2.0R، TP به 3.0R
-# 2) 3.0R: SL روی +3.0R، TP به 4.0R
-# 3) 4.0R: SL روی +4.0R، TP به 5.0R
-# ... و همینطور تا 20R
-DYNAMIC_RISK_CONFIG = {
+# مدیریت خروج با Trailing Stop - بر اساس بهترین نتایج بک‌تست
+# فقط Trailing Stop فعال است - بقیه استراتژی‌ها غیرفعال
+EXIT_MANAGEMENT_CONFIG = {
     'enable': True,
+    'trailing_stop': {
+        'enable': True,
+        'start_r': 1.5,      # شروع Trailing در 1.5R
+        'gap_r': 0.4,        # فاصله 0.4R از قیمت فعلی
+    },
+    'scale_out': {
+        'enable': False,     # غیرفعال - تاثیر قابل توجهی ندارد
+    },
+    'break_even': {
+        'enable': False,     # غیرفعال - تاثیر قابل توجهی ندارد
+    },
+    'take_profit': {
+        'enable': False,     # غیرفعال - Trailing به تنهایی کافی است
+    }
+}
+
+# مدیریت پویا چند مرحله‌ای جدید - DISABLED
+# این سیستم غیرفعال شده و به جای آن از Trailing Stop استفاده می‌شود
+DYNAMIC_RISK_CONFIG = {
+    'enable': False,  # غیرفعال شده - از EXIT_MANAGEMENT_CONFIG استفاده می‌شود
     'commission_per_lot': 4.5,          # کمیسیون کل (رفت و برگشت یا فقط رفت؟ طبق بروکر - قابل تنظیم)
     'commission_mode': 'per_lot',       # per_lot (کل)، per_side (نیمی از رفت و برگشت) در صورت نیاز توسعه
     'round_trip': False,                # اگر True و per_side باشد دو برابر می‌کند

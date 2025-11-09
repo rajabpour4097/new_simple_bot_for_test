@@ -1,10 +1,10 @@
-Best Exit Parameters
+Best Exit Parameters (FOR LIVE TRADING)
 {
-  "scaleout_r": 1.0,
+  "scaleout_r": null,
   "scaleout_frac": 0.0,
-  "be_trigger_r": NaN,
+  "be_trigger_r": null,
   "be_back_r": 0.0,
-  "tp_r": NaN,
+  "tp_r": null,
   "trailing_start_r": 1.5,
   "trailing_gap_r": 0.4
 }
