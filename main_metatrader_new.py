@@ -660,7 +660,7 @@ def main():
                     result = mt5_conn.open_buy_position(
                         tick=last_tick,
                         sl=stop,
-                        tp=0,  # بدون TP - Trailing Stop به تنهایی کافی است
+                        tp=None,  # بدون TP - Trailing Stop به تنهایی کافی است
                         comment=f"Bullish Swing {last_swing_type}",
                         risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.02)
                     )
@@ -828,7 +828,7 @@ def main():
                     result = mt5_conn.open_sell_position(
                         tick=last_tick,
                         sl=stop,
-                        tp=0,  # بدون TP - Trailing Stop به تنهایی کافی است
+                        tp=None,  # بدون TP - Trailing Stop به تنهایی کافی است
                         comment=f"Bearish Swing {last_swing_type}",
                         risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.02)
                     )
