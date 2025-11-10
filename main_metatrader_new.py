@@ -43,7 +43,7 @@ def main():
     last_swing_type = None
 
     print(f"🚀 MT5 Trading Bot Started...")
-    print(f"📊 Config: Symbol={MT5_CONFIG['symbol']}, Risk={MT5_CONFIG.get('risk_percent', 2.0)}%, Win Ratio={win_ratio}")
+    print(f"📊 Config: Symbol={MT5_CONFIG['symbol']}, Risk={MT5_CONFIG.get('risk_percent', 1.0)}%, Win Ratio={win_ratio}")
     print(f"⏰ Trading Hours (Iran): {MT5_CONFIG['trading_hours']['start']} - {MT5_CONFIG['trading_hours']['end']}")
     print(f"🇮🇷 Current Iran Time: {mt5_conn.get_iran_time().strftime('%Y-%m-%d %H:%M:%S')}")
     
@@ -656,13 +656,13 @@ def main():
 
                     # ارسال سفارش BUY بدون TP - فقط Trailing Stop مدیریت می‌کند
                     # استفاده از risk_percent از MT5_CONFIG برای محاسبه حجم خودکار
-                    risk_percent = MT5_CONFIG.get('risk_percent', 2.0)  # 2% ریسک
+                    risk_percent = MT5_CONFIG.get('risk_percent', 1.0)  # 1% ریسک
                     result = mt5_conn.open_buy_position(
                         tick=last_tick,
                         sl=stop,
                         tp=None,  # بدون TP - Trailing Stop به تنهایی کافی است
                         comment=f"Bullish Swing {last_swing_type}",
-                        risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.02)
+                        risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.01)
                     )
                     # ارسال ایمیل غیرمسدودکننده
                     try:
@@ -824,13 +824,13 @@ def main():
 
                     # ارسال سفارش SELL بدون TP - فقط Trailing Stop مدیریت می‌کند
                     # استفاده از risk_percent از MT5_CONFIG برای محاسبه حجم خودکار
-                    risk_percent = MT5_CONFIG.get('risk_percent', 2.0)  # 2% ریسک
+                    risk_percent = MT5_CONFIG.get('risk_percent', 1.0)  # 1% ریسک
                     result = mt5_conn.open_sell_position(
                         tick=last_tick,
                         sl=stop,
                         tp=None,  # بدون TP - Trailing Stop به تنهایی کافی است
                         comment=f"Bearish Swing {last_swing_type}",
-                        risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.02)
+                        risk_pct=risk_percent / 100.0  # تبدیل درصد به اعشار (0.01)
                     )
                     
                     # ارسال ایمیل غیرمسدودکننده

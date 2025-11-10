@@ -50,8 +50,8 @@ MY_CUSTOM_TIME_IRAN = {
 # تنظیمات MT5
 MT5_CONFIG = {
     'symbol': 'EURUSD',
-    'lot_size': 0.01,  # خودکار محاسبه می‌شود بر اساس ریسک 2%
-    'risk_percent': 2.0,  # ریسک 2 درصد در هر معامله
+    'lot_size': 0.01,  # خودکار محاسبه می‌شود بر اساس ریسک 1%
+    'risk_percent': 1.0,  # ریسک 1 درصد در هر معامله
     'win_ratio': 2,
     'magic_number': 234000,
     'deviation': 20,
