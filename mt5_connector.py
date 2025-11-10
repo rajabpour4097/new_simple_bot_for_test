@@ -207,6 +207,8 @@ class MT5Connector:
                 return None, None
 
         def norm(p):
+            if p is None:
+                return None
             return float(f"{p:.{info.digits}f}")
 
         return norm(sl_price), norm(tp_price)
@@ -264,13 +266,15 @@ class MT5Connector:
             "type": mt5.ORDER_TYPE_BUY,
             "price": entry,
             "sl": sl_adj,
-            "tp": tp_adj,
             "deviation": self.deviation,
             "magic": self.magic,
             "comment": comment,
             "type_time": mt5.ORDER_TIME_GTC,
         }
-        print(f"📤 BUY {self.symbol} @ {entry} VOL={vol} SL={sl_adj} TP={tp_adj}")
+        # فقط اگر TP مقدار داشته باشد، آن را اضافه کن
+        if tp_adj is not None:
+            request["tp"] = tp_adj
+        print(f"📤 BUY {self.symbol} @ {entry} VOL={vol} SL={sl_adj} TP={tp_adj if tp_adj else 'None'}")
         result = self.try_all_filling_modes(request)
         try:
             log_trade(self.symbol, "BUY", request, result, reason="strategy_signal")
@@ -312,13 +316,15 @@ class MT5Connector:
             "type": mt5.ORDER_TYPE_SELL,
             "price": entry,
             "sl": sl_adj,
-            "tp": tp_adj,
             "deviation": self.deviation,
             "magic": self.magic,
             "comment": comment,
             "type_time": mt5.ORDER_TIME_GTC,
         }
-        print(f"📤 SELL {self.symbol} @ {entry} VOL={vol} SL={sl_adj} TP={tp_adj}")
+        # فقط اگر TP مقدار داشته باشد، آن را اضافه کن
+        if tp_adj is not None:
+            request["tp"] = tp_adj
+        print(f"📤 SELL {self.symbol} @ {entry} VOL={vol} SL={sl_adj} TP={tp_adj if tp_adj else 'None'}")
         result = self.try_all_filling_modes(request)
         try:
             log_trade(self.symbol, "SELL", request, result, reason="strategy_signal")
