@@ -551,7 +551,7 @@ def main():
                             try:
                                 positions_summary = get_positions_summary()
                                 send_trade_email_async(
-                                    subject=f"SIGNAL SKIPPED - BUY {MT5_CONFIG['symbol']}",
+                                    subject=f"SIGNAL SKIPPED - BUY {MT5_CONFIG['symbol']} for 100$ account",
                                     body=(
                                         f"🚫 TRADING SIGNAL SKIPPED 🚫\n\n"
                                         f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
@@ -667,7 +667,7 @@ def main():
                     # ارسال ایمیل غیرمسدودکننده
                     try:
                         send_trade_email_async(
-                            subject=f"NEW BUY ORDER {MT5_CONFIG['symbol']}",
+                            subject=f"NEW BUY ORDER {MT5_CONFIG['symbol']} for 100$ account",
                             body=(
                                 f"Time: {datetime.now()}\n"
                                 f"Symbol: {MT5_CONFIG['symbol']}\n"
@@ -686,7 +686,7 @@ def main():
                         # ارسال ایمیل غیرمسدودکننده
                         try:
                             send_trade_email_async(
-                                subject = f"Last order result",
+                                subject = f"Last order result for 100$ account",
                                 body=(
                                     f"Ticket={result.order}\n"
                                     f"Price={result.price}\n"
@@ -729,7 +729,7 @@ def main():
                             try:
                                 positions_summary = get_positions_summary()
                                 send_trade_email_async(
-                                    subject=f"SIGNAL SKIPPED - SELL {MT5_CONFIG['symbol']}",
+                                    subject=f"SIGNAL SKIPPED - SELL {MT5_CONFIG['symbol']} for 100$ account",
                                     body=(
                                         f"🚫 TRADING SIGNAL SKIPPED 🚫\n\n"
                                         f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
@@ -836,7 +836,7 @@ def main():
                     # ارسال ایمیل غیرمسدودکننده
                     try:
                         send_trade_email_async(
-                            subject=f"NEW SELL ORDER {MT5_CONFIG['symbol']}",
+                            subject=f"NEW SELL ORDER {MT5_CONFIG['symbol']} for 100$ account",
                             body=(
                                 f"Time: {datetime.now()}\n"
                                 f"Symbol: {MT5_CONFIG['symbol']}\n"
@@ -855,7 +855,7 @@ def main():
                         # ارسال ایمیل غیرمسدودکننده
                         try:
                             send_trade_email_async(
-                                subject = f"Last order result",
+                                subject = f"Last order result for 100$ account",
                                 body=(
                                     f"Ticket={result.order}\n"
                                     f"Price={result.price}\n"
